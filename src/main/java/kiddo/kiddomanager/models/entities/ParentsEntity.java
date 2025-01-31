@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,9 @@ public class ParentsEntity {
     private String firstName;
     private String lastName;
     private String password;
-    private AddressEntity adress;
     private String phoneNumber;
+    @OneToOne
+    private AddressEntity address;
     @OneToMany(mappedBy = "parents", cascade = CascadeType.MERGE)
     private List<ChildEntity> children;
 }

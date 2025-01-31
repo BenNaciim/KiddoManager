@@ -5,33 +5,27 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import kiddo.kiddomanager.models.enums.ActivityTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ChildEntity {
+public class ActivityEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstName;
-    private String lastName;
-    private LocalDate dateOfBirth;
-    private int age;
-    private LocalDate dateOfRegistration;
-    @OneToMany(mappedBy = "child")
-    private List<ActivityEntity> tasks;
+    private ActivityTypeEnum activityType;
+    private String description;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     @ManyToOne
-    private ParentsEntity parents;
-
+    private ChildEntity child;
 }

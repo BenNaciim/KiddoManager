@@ -18,5 +18,7 @@ public class Parents {
     private String lastName;
     private String email;
     private String password;
+    private String phoneNumber;
+    private Address address;
     private List<Child> children;
 }

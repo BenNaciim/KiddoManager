@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +20,5 @@ public class Child {
     private LocalDate dateOfBirth;
     private int age;
     private LocalDate dateOfRegistration;
+    private List<Activity> activities;
 }
