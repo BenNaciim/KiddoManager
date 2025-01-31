@@ -2,7 +2,6 @@ package kiddo.kiddomanager.models.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
-import kiddo.kiddomanager.models.Child;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -23,6 +22,8 @@ public class ParentsEntity {
     private String firstName;
     private String lastName;
     private String password;
+    private AddressEntity adress;
+    private String phoneNumber;
     @OneToMany(mappedBy = "parents", cascade = CascadeType.MERGE)
     private List<ChildEntity> children;
 }
