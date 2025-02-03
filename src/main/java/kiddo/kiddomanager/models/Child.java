@@ -20,5 +20,7 @@ public class Child {
     private LocalDate dateOfBirth;
     private int age;
     private LocalDate dateOfRegistration;
-    private List<Activity> activities;
+    private byte[] picture;
+    private List<Activity> tasks;
+    private Parents parents;
 }

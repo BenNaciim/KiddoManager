@@ -4,9 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "Children")
 public class ChildEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +33,21 @@ public class ChildEntity {
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;
+    @Transient
     private int age;
     private LocalDate dateOfRegistration;
+    private byte[] picture;
     @OneToMany(mappedBy = "child")
     private List<ActivityEntity> tasks;
     @ManyToOne
+    @JoinColumn(name = "email")
     private ParentsEntity parents;
+
+    @PostLoad
+    public void calculateAge() {
+        if (dateOfBirth != null) {
+            this.age = LocalDate.now().getYear() - dateOfBirth.getYear();
+        }
+    }
 
 }

@@ -1,5 +1,6 @@
 package kiddo.kiddomanager.models;
 
+import kiddo.kiddomanager.models.entities.ParentsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +22,5 @@ public class Parents {
     private String phoneNumber;
     private Address address;
     private List<Child> children;
+
 }

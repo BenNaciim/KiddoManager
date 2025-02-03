@@ -1,9 +1,9 @@
 package kiddo.kiddomanager.models.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public enum ActivityTypeEnum {
     Arrival("Arrivé"),
@@ -11,6 +11,20 @@ public enum ActivityTypeEnum {
     Food("Repas/Goûter"),
     Nap("Sieste"),
     Diaper("Changement de couches"),
-    care("Soins");
-    private final String type;
+    Care(""),
+    Custom("");
+
+    private String type;
+
+    public static ActivityTypeEnum careType(String careType) {
+      ActivityTypeEnum careActivity = ActivityTypeEnum.Care;
+      careActivity.type = careType;
+      return careActivity;
+    }
+
+    public static ActivityTypeEnum customType(String customType) {
+        ActivityTypeEnum customActivity = ActivityTypeEnum.Custom;
+        customActivity.type = customType;
+        return customActivity;
+    }
 }
