@@ -23,7 +23,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/parents")
-    public ResponseEntity<HttpStatus> registerParents(@RequestBody Parents parents) {
+    public ResponseEntity<String> registerParents(@RequestBody Parents parents) {
         return Objects.nonNull(registrationService.registerParents(parents))? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
