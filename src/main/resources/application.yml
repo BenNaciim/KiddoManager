@@ -1,3 +1,15 @@
+server:
+  port: 8080
 spring:
   application:
     name: KiddoManager
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kiddoDB
+    username: admin
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  docker:
+    compose:
+      enabled: on
