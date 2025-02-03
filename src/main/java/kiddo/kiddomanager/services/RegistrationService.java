@@ -2,24 +2,32 @@ package kiddo.kiddomanager.services;
 
 import kiddo.kiddomanager.models.Parents;
 import kiddo.kiddomanager.models.Personal;
+import kiddo.kiddomanager.models.entities.ParentsEntity;
+import kiddo.kiddomanager.models.entities.PersonalEntity;
+import kiddo.kiddomanager.models.mappers.ParentsMapper;
+import kiddo.kiddomanager.models.mappers.PersonalMapper;
 import kiddo.kiddomanager.repositories.ParentsRepository;
 import kiddo.kiddomanager.repositories.PersonalRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RegistrationService {
     private final ParentsRepository parentsRepository;
     private final PersonalRepository personalRepository;
+    private final PersonalMapper personalMapper;
+    private final ParentsMapper parentsMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public RegistrationService(ParentsRepository parentsRepository, PersonalRepository personalRepository) {
-        this.parentsRepository = parentsRepository;
-        this.personalRepository = personalRepository;
+    public ParentsEntity registerParents(Parents parents) {
+        parents.setPassword(passwordEncoder.encode(parents.getPassword()));
+        return parentsRepository.save(parentsMapper.mapParentsEntity(parents));
     }
 
-    public void registerParents(Parents parents) {
-        
-    }
-
-    public void registerEmployee(Personal personal) {
+    public PersonalEntity registerEmployee(Personal personal) {
+        personal.setPassword(passwordEncoder.encode(personal.getPassword()));
+        return personalRepository.save(personalMapper.mapPersonalEntity(personal));
     }
 }
