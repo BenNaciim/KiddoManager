@@ -47,7 +47,7 @@ public class SpringSecurityConfig {
 
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/customer/login/**", "/customer/create").permitAll()
+                        .requestMatchers("/login/**", "/register/parents","/register/employee").permitAll()
                         .anyRequest().fullyAuthenticated())
                 .addFilter(jwtAuthenticationFilter)
                 .addFilter(jwtAuthorizationFilter)

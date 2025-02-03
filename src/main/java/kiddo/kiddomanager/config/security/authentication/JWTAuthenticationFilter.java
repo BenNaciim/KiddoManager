@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kiddo.kiddomanager.config.security.Users;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
+import static java.util.Collections.emptyList;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.EXPIRATION_TIME;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.SECRET;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.TOKEN_PREFIX;
@@ -40,7 +42,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication authResult) throws IOException {
         // Create the token from the secret key
         String token = JWT.create()
-                .withSubject(((CustomerDetails) authResult.getPrincipal()).getEmail())
+                .withSubject(((Users) authResult.getPrincipal()).getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
         // Authorize the Authorization header to be exposed in the response headers to be used in the front end side
