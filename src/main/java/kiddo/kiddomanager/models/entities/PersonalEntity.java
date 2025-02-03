@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "Personal")
+@Table(name = "personal")
 public class PersonalEntity {
     @Id
     private String email;

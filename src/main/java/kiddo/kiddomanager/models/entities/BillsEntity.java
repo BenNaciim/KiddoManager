@@ -1,38 +1,35 @@
 package kiddo.kiddomanager.models.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import kiddo.kiddomanager.models.enums.ActivityTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "activities")
-public class ActivityEntity {
+@Table(name = "bills")
+public class BillsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private ActivityTypeEnum activityType;
-    private String description;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+    private double amount;
     @ManyToOne
-    private ChildEntity child;
+    @JoinColumn(name = "email")
+    private ParentsEntity parents;
+
 }

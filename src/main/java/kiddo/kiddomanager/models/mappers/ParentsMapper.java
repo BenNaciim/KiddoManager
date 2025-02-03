@@ -19,5 +19,11 @@ public interface ParentsMapper {
                 .ifPresent(children ->
                         children.forEach(child -> child.setParents(parentsEntity)));
     }
+    @AfterMapping
+    default void linkBillsToParents(@MappingTarget ParentsEntity parentsEntity) {
+        Optional.ofNullable(parentsEntity.getBills())
+                .ifPresent(bills ->
+                        bills.forEach(bill -> bill.setParents(parentsEntity)));
+    }
 
 }
