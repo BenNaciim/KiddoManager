@@ -1,5 +1,7 @@
 package kiddo.kiddomanager.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kiddo.kiddomanager.models.entities.ParentsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,8 @@ public class Parents {
     private String password;
     private String phoneNumber;
     private Address address;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean isAccountActive;
     private List<Child> children;
 
 }

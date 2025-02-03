@@ -26,6 +26,7 @@ public class ParentsEntity {
     private String lastName;
     private String password;
     private String phoneNumber;
+    private boolean isAccountActive;
     @OneToOne(cascade = CascadeType.ALL)
     private AddressEntity address;
     @OneToMany(mappedBy = "parents", cascade = CascadeType.MERGE)
