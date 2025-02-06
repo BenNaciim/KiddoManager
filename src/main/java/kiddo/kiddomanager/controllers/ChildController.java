@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,9 +28,16 @@ public class ChildController {
         return Objects.nonNull(child)?ResponseEntity.ok(child):ResponseEntity.notFound().build();
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<HttpStatus> addChild(@RequestBody Child child) {
+        childService.addChild(child);
+        return ResponseEntity.ok().build();
+    }
+
+
     @DeleteMapping("/remove")
-    public ResponseEntity<HttpStatus> removeChild(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        childService.removeChild(firstName, lastName);
+    public ResponseEntity<HttpStatus> removeChild(@RequestBody Child child) {
+        childService.removeChild(child);
         return ResponseEntity.ok().build();
     }
 }

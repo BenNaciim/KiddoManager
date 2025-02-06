@@ -11,16 +11,11 @@ public enum ActivityTypeEnum {
     Food("Repas/Goûter"),
     Nap("Sieste"),
     Diaper("Changement de couches"),
-    Care(""),
+    Care("Soin"),
     Custom("");
 
     private String type;
 
-    public static ActivityTypeEnum careType(String careType) {
-      ActivityTypeEnum careActivity = ActivityTypeEnum.Care;
-      careActivity.type = careType;
-      return careActivity;
-    }
 
     public static ActivityTypeEnum customType(String customType) {
         ActivityTypeEnum customActivity = ActivityTypeEnum.Custom;

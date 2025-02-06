@@ -30,4 +30,14 @@ public class RegistrationService {
         personal.setPassword(passwordEncoder.encode(personal.getPassword()));
         return personalRepository.save(personalMapper.mapPersonalEntity(personal));
     }
+
+    public void removeParentsAccount(String email) {
+        ParentsEntity parentsEntity = parentsRepository.findParentsEntityByEmail(email);
+        parentsRepository.delete(parentsEntity);
+    }
+
+    public void removePersonalAccount(String email) {
+        PersonalEntity personalEntity = personalRepository.findPersonalEntityByEmail(email);
+        personalRepository.delete(personalEntity);
+    }
 }
