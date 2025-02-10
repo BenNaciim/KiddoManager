@@ -12,7 +12,7 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(ParentsNotFoundException.class)
     public ResponseEntity<String> handleParentsNotFoundException(ParentsNotFoundException ex) {
-        log.error("Exception CustomException : " + ex.getMessage());
+        log.error("Exception CustomException : {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }
