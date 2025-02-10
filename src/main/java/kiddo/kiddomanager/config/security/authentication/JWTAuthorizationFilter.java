@@ -2,6 +2,7 @@ package kiddo.kiddomanager.config.security.authentication;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,16 +11,20 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.SECRET;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+
+
 
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -48,13 +53,17 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         // retrieve the token and check if correct
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (token != null) {
-            String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+            DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                     .build()
-                    .verify(token.replace(TOKEN_PREFIX, Strings.EMPTY))
+                    .verify(token.replace(TOKEN_PREFIX, Strings.EMPTY));
+            String user = decodedJWT
                     .getSubject();
 
+            String role = decodedJWT.getClaim("role").asString();
+
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, emptyList());
+                return new UsernamePasswordAuthenticationToken(user, null, role.isEmpty() ? Collections.emptyList():
+                        List.of(new SimpleGrantedAuthority("ROLE_"+role)));
             }
             return null;
         }

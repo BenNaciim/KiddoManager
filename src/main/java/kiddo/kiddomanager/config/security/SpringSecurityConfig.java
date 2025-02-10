@@ -48,6 +48,7 @@ public class SpringSecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/login/**", "/register/parents","/register/employee").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().fullyAuthenticated())
                 .addFilter(jwtAuthenticationFilter)
                 .addFilter(jwtAuthorizationFilter)

@@ -6,6 +6,7 @@ import kiddo.kiddomanager.models.entities.PersonalEntity;
 import kiddo.kiddomanager.repositories.ParentsRepository;
 import kiddo.kiddomanager.repositories.PersonalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,17 +40,17 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     private Users loadFromPersonalTable(String email) {
-        PersonalEntity usersByEmail = personalRepository.findPersonalEntityByEmail(email);
+        PersonalEntity user = personalRepository.findPersonalEntityByEmail(email);
 
-        if (Objects.isNull(usersByEmail)) {
+        if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("User not found");
         }
         else {
             return new Users(
-                    usersByEmail.getEmail(),
-                    usersByEmail.getPassword(),
-                    Collections.emptyList(),
-                    usersByEmail.getEmail()
+                    user.getEmail(),
+                    user.getPassword(),
+                        Set.of(new SimpleGrantedAuthority(user.getRole().name())),
+                    user.getEmail()
             );
         }
     }

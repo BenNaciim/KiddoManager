@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.Date;
@@ -39,18 +40,30 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                            Authentication authResult) throws IOException {
-        // Create the token from the secret key
-        String token = JWT.create()
-                .withSubject(((Users) authResult.getPrincipal()).getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(HMAC512(SECRET.getBytes()));
-        // Authorize the Authorization header to be exposed in the response headers to be used in the front end side
-        response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
-        // Put the token in the Authorization header
-        response.addHeader(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token);
-        // Add a msg in the response body
-        response.setStatus(HttpServletResponse.SC_OK);
+                                            Authentication authResult) {
+        String token;
+        if (CollectionUtils.isEmpty(authResult.getAuthorities())){
+            token = JWT.create()
+                    .withSubject(((Users) authResult.getPrincipal()).getEmail())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                    .sign(HMAC512(SECRET.getBytes()));
+        }
+
+        else {
+            // Create the token from the secret key
+            token = JWT.create()
+                    .withSubject(((Users) authResult.getPrincipal()).getEmail())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                    .withClaim("role", authResult.getAuthorities().iterator().next().getAuthority())
+                    .sign(HMAC512(SECRET.getBytes()));
+        }
+            // Authorize the Authorization header to be exposed in the response headers to be used in the front end side
+            response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
+            // Put the token in the Authorization header
+            response.addHeader(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token);
+            // Add a msg in the response body
+            response.setStatus(HttpServletResponse.SC_OK);
+
     }
 
     @Override
