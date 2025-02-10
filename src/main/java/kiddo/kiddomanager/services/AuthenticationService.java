@@ -49,7 +49,7 @@ public class AuthenticationService implements UserDetailsService {
             return new Users(
                     user.getEmail(),
                     user.getPassword(),
-                        Set.of(new SimpleGrantedAuthority(user.getRole().name())),
+                        Set.of(new SimpleGrantedAuthority("ROLE_".concat(user.getRole().name()))),
                     user.getEmail()
             );
         }

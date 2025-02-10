@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -46,6 +47,7 @@ public class SpringSecurityConfig {
         jwtAuthenticationFilter.setFilterProcessesUrl(SIGN_UP_URL);
 
         return http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // avoid creating session every must be
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/login/**", "/register/parents","/register/employee").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")

@@ -1,5 +1,6 @@
 package kiddo.kiddomanager.exceptions;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,12 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(ParentsNotFoundException.class)
     public ResponseEntity<String> handleParentsNotFoundException(ParentsNotFoundException ex) {
+        log.error("Exception CustomException : {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<String> handleTokenExpiredException(TokenExpiredException ex) {
         log.error("Exception CustomException : {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }

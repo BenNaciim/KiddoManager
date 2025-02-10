@@ -2,6 +2,7 @@ package kiddo.kiddomanager.config.security.authentication;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,8 +25,6 @@ import static kiddo.kiddomanager.config.security.authentication.SecurityConstant
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-
-
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
@@ -37,19 +36,23 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
         // check if header contain authorization and start with prefix BEARER
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        try {
+            if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+                chain.doFilter(request, response);
+                return;
+            }
 
-        if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
-            return;
+        } catch (TokenExpiredException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(e.getMessage());
         }
-
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        chain.doFilter(request, response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // retrieve the token and check if correct
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (token != null) {
@@ -62,8 +65,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String role = decodedJWT.getClaim("role").asString();
 
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, role.isEmpty() ? Collections.emptyList():
-                        List.of(new SimpleGrantedAuthority("ROLE_"+role)));
+                return new UsernamePasswordAuthenticationToken(user, null, role.isEmpty() ? Collections.emptyList() :
+                        List.of(new SimpleGrantedAuthority(role)));
             }
             return null;
         }
