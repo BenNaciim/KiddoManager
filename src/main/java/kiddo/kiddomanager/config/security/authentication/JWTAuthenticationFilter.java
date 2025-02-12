@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kiddo.kiddomanager.config.security.Users;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
@@ -34,8 +36,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) {
-        String email = ((Users) authResult.getPrincipal()).getEmail();
-        String role = authResult.getAuthorities().iterator().next().getAuthority();
+        String email = ((Users) authResult.getPrincipal()).getEmail();*
+        // A REVOIR
+        String role = Optional.of(authResult.getAuthorities().iterator().next().getAuthority()).orElse(Strings.EMPTY);
         Map<String, String> generatedToken = tokenGenerator.generateToken(email, role);
 
         // Authorize the Authorization header to be exposed in the response headers to be used in the front end side
