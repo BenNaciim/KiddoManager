@@ -1,15 +1,17 @@
 package kiddo.kiddomanager.models.entities;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import kiddo.kiddomanager.models.enums.PersonalRoleEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
@@ -23,6 +25,7 @@ public class PersonalEntity {
     private String password;
     private String firstName;
     private String lastName;
+    private LocalDate hireDate;
     @Enumerated(EnumType.STRING)
     private PersonalRoleEnum role;
 }

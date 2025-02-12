@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -17,5 +19,6 @@ public class Personal {
     private String lastName;
     private String email;
     private String password;
+    private LocalDate hireDate;
     private PersonalRoleEnum role;
 }
