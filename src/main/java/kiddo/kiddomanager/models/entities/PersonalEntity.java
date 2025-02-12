@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -25,6 +26,7 @@ public class PersonalEntity {
     private String password;
     private String firstName;
     private String lastName;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate hireDate;
     @Enumerated(EnumType.STRING)
     private PersonalRoleEnum role;

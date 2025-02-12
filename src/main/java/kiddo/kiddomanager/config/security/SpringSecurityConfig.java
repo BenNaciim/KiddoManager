@@ -2,7 +2,9 @@ package kiddo.kiddomanager.config.security;
 
 import kiddo.kiddomanager.config.security.authentication.JWTAuthenticationFilter;
 import kiddo.kiddomanager.config.security.authentication.JWTAuthorizationFilter;
+import kiddo.kiddomanager.config.security.authentication.TokenGenerator;
 import kiddo.kiddomanager.services.AuthenticationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,15 +23,12 @@ import static kiddo.kiddomanager.config.security.authentication.SecurityConstant
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SpringSecurityConfig {
 
     private final AuthenticationService authenticationService;
     private final PasswordEncoder passwordEncoder;
-
-    public SpringSecurityConfig(AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
-        this.authenticationService = authenticationService;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final TokenGenerator tokenGenerator;
 
     @Bean
     public AuthenticationManager authenticationManager() {
@@ -42,14 +41,14 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        final JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter(authenticationManager());
+        final JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter(authenticationManager(),tokenGenerator);
         final JWTAuthorizationFilter jwtAuthorizationFilter = new JWTAuthorizationFilter(authenticationManager());
         jwtAuthenticationFilter.setFilterProcessesUrl(SIGN_UP_URL);
 
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // avoid creating session every must be
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/login/**", "/register/parents","/register/employee").permitAll()
+                        .requestMatchers("/login/**", "/register/parents","/register/employee","/refresh_token").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().fullyAuthenticated())
                 .addFilter(jwtAuthenticationFilter)
