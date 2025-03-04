@@ -1,8 +1,6 @@
 package kiddo.kiddomanager.models.entities;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,27 +9,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "bills")
-public class BillsEntity {
+@Table(name = "documents")
+public class DocumentEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDate fromDate;
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDate toDate;
-    private double amount;
+    private long id;
+    private String title;
+    private String description;
+    private byte[] document;
     @ManyToOne
     @JoinColumn(name = "email")
     private ParentsEntity parents;
-
 }

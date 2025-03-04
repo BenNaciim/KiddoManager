@@ -33,4 +33,6 @@ public class ParentsEntity {
     private List<ChildEntity> children;
     @OneToMany(mappedBy = "parents", cascade = CascadeType.MERGE)
     private List<BillsEntity> bills;
+    @OneToMany(mappedBy = "parents", cascade = CascadeType.MERGE)
+    private List<DocumentEntity> documents;
 }

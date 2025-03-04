@@ -24,5 +24,6 @@ public class Parents {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean accountActive;
     private List<Child> children;
+    private List<Document> documents;
 
 }
