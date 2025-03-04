@@ -1,5 +1,6 @@
 package kiddo.kiddomanager.config.security.authentication;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -75,7 +76,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String role = decodedJWT.getClaim("role").asString();
 
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, role.isEmpty() ? Collections.emptyList() :
+                return new UsernamePasswordAuthenticationToken(user, null, StringUtil.isNullOrEmpty(role) ? Collections.emptyList() :
                         List.of(new SimpleGrantedAuthority(role)));
             }
             log.error("user is null");
