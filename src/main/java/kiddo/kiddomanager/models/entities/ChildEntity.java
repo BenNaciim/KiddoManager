@@ -5,10 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -16,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +31,7 @@ public class ChildEntity {
     private Long id;
     private String firstName;
     private String lastName;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirth;
     @Transient
     private int age;
