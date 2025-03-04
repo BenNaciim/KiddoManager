@@ -40,9 +40,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String role = CollectionUtils.isEmpty(authResult.getAuthorities()) ? Strings.EMPTY : authResult.getAuthorities().iterator().next().getAuthority();
         Map<String, String> generatedToken = tokenGenerator.generateToken(email, role);
 
-        // Authorize the Authorization header to be exposed in the response headers to be used in the front end side
+        // Expose the token in the reponse header to be used in the front end
         tokenGenerator.addTokenToReponse(response, generatedToken);
-
     }
 
     @Override

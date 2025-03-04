@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,14 +24,17 @@ import java.util.List;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.SECRET;
 import static kiddo.kiddomanager.config.security.authentication.SecurityConstants.TOKEN_PREFIX;
 
+@Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+    private TokenGenerator tokenGenerator;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, TokenGenerator tokenGenerator) {
         super(authenticationManager);
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Override
-    // intercept any request if diff from the allowed url(see application.properties)
+    // intercept any request if diff from the allowed url (see SpringSecurityConfig)
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -47,8 +51,16 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
         } catch (TokenExpiredException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getMessage());
+            log.info("Token expired , refreshing token");
+            try {
+                tokenGenerator.refreshToken(request, response);
+                log.info("Token refreshed successfully");
+            } catch (TokenExpiredException ex) {
+                log.error("Token expired, please login again");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write(e.getMessage());
+            }
+
         }
     }
 
@@ -59,17 +71,17 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, Strings.EMPTY));
-            String user = decodedJWT
-                    .getSubject();
-
+            String user = decodedJWT.getSubject();
             String role = decodedJWT.getClaim("role").asString();
 
             if (user != null) {
                 return new UsernamePasswordAuthenticationToken(user, null, role.isEmpty() ? Collections.emptyList() :
                         List.of(new SimpleGrantedAuthority(role)));
             }
+            log.error("user is null");
             return null;
         }
+        log.error("Token is null");
         return null;
     }
 }
