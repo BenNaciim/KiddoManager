@@ -32,7 +32,7 @@ public class RegistrationService {
     }
 
     public void removeParentsAccount(String email) {
-        ParentsEntity parentsEntity = parentsRepository.findParentsEntityByEmail(email);
+        ParentsEntity parentsEntity = parentsRepository.findByEmail(email);
         parentsRepository.delete(parentsEntity);
     }
 

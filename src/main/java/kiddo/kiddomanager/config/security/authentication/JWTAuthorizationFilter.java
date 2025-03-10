@@ -1,8 +1,8 @@
 package kiddo.kiddomanager.config.security.authentication;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -27,7 +28,7 @@ import static kiddo.kiddomanager.config.security.authentication.SecurityConstant
 
 @Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
-    private TokenGenerator tokenGenerator;
+    private final TokenGenerator tokenGenerator;
 
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager, TokenGenerator tokenGenerator) {
         super(authenticationManager);
@@ -42,26 +43,36 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         // check if header contain authorization and start with prefix BEARER
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         try {
-            if (header == null || !header.startsWith(TOKEN_PREFIX)) {
+            if (!StringUtils.hasText(header) || !header.startsWith(TOKEN_PREFIX)) {
                 chain.doFilter(request, response);
                 return;
             }
 
             UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response);
+            if (authentication == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid or missing token");
+                return;
+            }
+
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
+
         } catch (TokenExpiredException e) {
-            log.info("Token expired , refreshing token");
+            log.warn("Token expired, attempting refresh");
             try {
                 tokenGenerator.refreshToken(request, response);
                 log.info("Token refreshed successfully");
-            } catch (TokenExpiredException ex) {
-                log.error("Token expired, please login again");
+            } catch (Exception ex) {
+                log.error("Token refresh failed, user must reauthenticate");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write(e.getMessage());
+                response.getWriter().write("Token expired, please login again");
             }
-
+        } catch (JWTVerificationException e) {
+            log.error("Invalid JWT token", e);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid token");
         }
     }
 
@@ -76,7 +87,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String role = decodedJWT.getClaim("role").asString();
 
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, StringUtil.isNullOrEmpty(role) ? Collections.emptyList() :
+                return new UsernamePasswordAuthenticationToken(user, null, !StringUtils.hasText(role) ? Collections.emptyList() :
                         List.of(new SimpleGrantedAuthority(role)));
             }
             log.error("user is null");

@@ -1,6 +1,7 @@
 package kiddo.kiddomanager.services;
 
 import kiddo.kiddomanager.config.security.Users;
+import kiddo.kiddomanager.exceptions.AccountNotActiveException;
 import kiddo.kiddomanager.models.entities.ParentsEntity;
 import kiddo.kiddomanager.models.entities.PersonalEntity;
 import kiddo.kiddomanager.repositories.ParentsRepository;
@@ -23,12 +24,15 @@ public class AuthenticationService implements UserDetailsService {
     private final PersonalRepository personalRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        ParentsEntity usersByEmail = parentsRepository.findParentsEntityByEmail(email);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException, AccountNotActiveException {
+        ParentsEntity usersByEmail = parentsRepository.findByEmail(email);
 
         if (Objects.isNull(usersByEmail)) {
             return loadFromPersonalTable(email);
         } else {
+            if(!usersByEmail.isAccountActive()) {
+                throw new AccountNotActiveException();
+            }
             return new Users(
                     usersByEmail.getEmail(),
                     usersByEmail.getPassword(),

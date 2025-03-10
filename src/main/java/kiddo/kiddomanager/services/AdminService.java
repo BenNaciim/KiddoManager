@@ -13,7 +13,7 @@ public class AdminService {
     private final ParentsRepository parentsRepository;
 
     public void validateSubscription(String email) {
-        ParentsEntity parentsEntityByEmail = parentsRepository.findParentsEntityByEmail(email);
+        ParentsEntity parentsEntityByEmail = parentsRepository.findByEmail(email);
         if (parentsEntityByEmail == null) {
             throw new ParentsNotFoundException(email);
         }

@@ -1,8 +1,10 @@
 package kiddo.kiddomanager.config.security.authentication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kiddo.kiddomanager.config.security.LoginRequest;
 import kiddo.kiddomanager.config.security.Users;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -28,9 +30,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        //we retrieve the userName and password from the queryParameter if the authentication is success we call successfulAuthentication
-        return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getParameter("userName"), request.getParameter("password"), emptyList()));
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequest.userName(), loginRequest.password(), emptyList());
+
+            return authenticationManager.authenticate(authenticationToken);
+        } catch (IOException e) {
+            throw new RuntimeException("Invalid request format");
+        }
     }
 
     @Override
@@ -48,6 +58,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("Authentication Failed : Bad Credentials");
+        response.getWriter().write(failed.getMessage());
     }
 }

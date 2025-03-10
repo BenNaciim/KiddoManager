@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParentsRepository extends JpaRepository<ParentsEntity, String> {
-    ParentsEntity findParentsEntityByEmail(String email);
+    ParentsEntity findByEmail(String email);
 }
